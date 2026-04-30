@@ -1,3 +1,4 @@
+
 def test_show_summary_with_valid_email(client):
     response = client.post("/showSummary", data={
         "email": "admin@irontemple.com"
@@ -13,7 +14,6 @@ def test_show_summary_with_unknown_email(client):
 
     assert response.status_code == 200
     assert b"Sorry, that email was not found" in response.data
-    
 
 
 
@@ -37,6 +37,5 @@ def test_purchase_places_with_too_many_places(client):
     assert response.status_code == 200
     assert b"You are not authorized to book this number of places" in response.data
     
-
 
 
