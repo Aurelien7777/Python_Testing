@@ -32,10 +32,48 @@ def test_purchase_places_with_too_many_places(client):
         "competition": "Spring Festival",
         "club": "Iron Temple",
         "places": "5", 
-    })
+    }, follow_redirects=True)
     
     assert response.status_code == 200
     assert b"You are not authorized to book this number of places" in response.data
+
+
+
+
+
+
+
+def test_book_less_or_12_places(client, booking_test_data): 
     
+    club_test, competition_test = booking_test_data
+    
+    places_before = int(competition_test["numberOfPlaces"])
+    places_required = 12
+    
+    response = client.post("/purchasePlaces", data={
+        "competition": competition_test["name"],
+        "club": club_test["name"],
+        "places": str(places_required),
+        }, follow_redirects=True) 
+    
+    assert response.status_code == 200 
+    assert b"Great-booking complete!" in response.data 
+    assert competition_test["numberOfPlaces"] == places_before - places_required
 
 
+
+
+
+
+
+
+
+
+def test_book_more_than_12_places(client): 
+    response = client.post("/purchasePlaces", data={ 
+    "competition": "Spring Festival", 
+    "club": "Simply Lift", 
+    "places": "13",}) 
+    
+    assert response.status_code == 200 
+    assert b"You are not authorized to book more than 12 places per competition!" in response.data
