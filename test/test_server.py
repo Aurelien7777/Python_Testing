@@ -1,4 +1,5 @@
 
+
 def test_show_summary_with_valid_email(client):
     response = client.post("/showSummary", data={
         "email": "admin@irontemple.com"
@@ -40,9 +41,6 @@ def test_purchase_places_with_too_many_places(client):
 
 
 
-
-
-
 def test_book_less_or_12_places(client, booking_test_data): 
     
     club_test, competition_test = booking_test_data
@@ -60,15 +58,6 @@ def test_book_less_or_12_places(client, booking_test_data):
     assert b"Great-booking complete!" in response.data 
     assert competition_test["numberOfPlaces"] == places_before - places_required
 
-
-
-
-
-
-
-
-
-
 def test_book_more_than_12_places(client): 
     response = client.post("/purchasePlaces", data={ 
     "competition": "Spring Festival", 
@@ -77,3 +66,23 @@ def test_book_more_than_12_places(client):
     
     assert response.status_code == 200 
     assert b"You are not authorized to book more than 12 places per competition!" in response.data
+
+
+def test_book_valid_competition(client, booking_test_data):
+    club_test, competition_test = booking_test_data
+
+    response = client.get(
+        f'/book/{competition_test["name"]}/{club_test["name"]}',
+        follow_redirects=True
+    )
+
+    assert response.status_code == 200
+    assert b"How many places?" in response.data
+
+
+def test_book_in_past_competition(client):
+    
+    response = client.get('/book/Spring%20Festival/Iron%20Temple', follow_redirects=True)
+    
+    assert response.status_code == 200
+    assert b"You cannot book places for a past competition" in response.data
