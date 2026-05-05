@@ -18,6 +18,7 @@ def test_show_summary_with_unknown_email(client):
 
 
 
+
 def test_purchase_places_with_valid_number_of_places(client):
     response = client.post("/purchasePlaces", data={
         "competition": "Spring Festival",
@@ -37,6 +38,7 @@ def test_purchase_places_with_too_many_places(client):
     
     assert response.status_code == 200
     assert b"You are not authorized to book this number of places" in response.data
+
 
 
 
@@ -82,13 +84,16 @@ def test_book_valid_competition(client, booking_test_data):
     assert response.status_code == 200
     assert b"How many places?" in response.data
 
-
 def test_book_in_past_competition(client):
     
     response = client.get('/book/Spring%20Festival/Iron%20Temple', follow_redirects=True)
     
     assert response.status_code == 200
     assert b"You cannot book places for a past competition" in response.data
+
+
+
+
 
 def test_club_points_are_deducted_after_booking(client, booking_test_data):
     club_test, competition_test = booking_test_data
@@ -105,3 +110,21 @@ def test_club_points_are_deducted_after_booking(client, booking_test_data):
     assert response.status_code == 200
     assert b"Great-booking complete!" in response.data
     assert club_test["points"] == points_before - places_required
+
+
+
+
+
+def test_display_list_of_club_and_their_current_point(client, booking_test_data):
+    club_test, competition_test = booking_test_data
+    
+    points_club = int(club_test["points"])
+    name_club = club_test["name"]
+    
+    response = client.post('/showSummary',data=
+        {"email": "admin@irontemple.com"})
+    
+    assert response.status_code == 200
+    assert name_club.encode() in response.data
+    assert str(points_club).encode() in response.data
+    

@@ -35,7 +35,9 @@ def showSummary():
     
     return render_template('welcome.html',
                         club=club[0],
-                        competitions=competitions)
+                        competitions=competitions,
+                        clubs=clubs)
+
 
 
 @app.route('/book/<competition>/<club>')
