@@ -127,4 +127,44 @@ def test_display_list_of_club_and_their_current_point(client, booking_test_data)
     assert response.status_code == 200
     assert name_club.encode() in response.data
     assert str(points_club).encode() in response.data
+
+
+
+def test_booking_egal_or_less_places_than_available(client, booking_test_data):
     
+    club_test, competition_test = booking_test_data
+    places_required = 12
+    places_competition = 12
+    competition_test['numberOfPlaces'] = places_competition
+    
+    response = client.post('/purchasePlaces', data={
+        "competition": competition_test['name'],
+        "club": club_test['name'],
+        "places": str(places_required)
+    }, follow_redirects=True)
+    
+    assert response.status_code == 200
+    assert places_competition - places_required >= 0
+    assert b"Great-booking complete!" in response.data
+    assert b"You are not authorized to book more than available places!" not in response.data
+    assert competition_test["numberOfPlaces"] == places_competition - places_required
+
+
+def test_booking_more_places_than_available(client, booking_test_data):
+    
+    club_test, competition_test = booking_test_data
+    places_required = 12
+    places_competition = 11
+    competition_test['numberOfPlaces'] = places_competition
+    
+    response = client.post('/purchasePlaces', data={
+        "competition": competition_test['name'],
+        "club": club_test['name'],
+        "places": str(places_required)
+    }, follow_redirects=True)
+    
+    assert response.status_code == 200
+    assert places_competition - places_required < 0
+    assert b"You are not authorized to book more than available places!" in response.data
+    assert b"Great-booking complete!" not in response.data
+    assert int(competition_test["numberOfPlaces"]) == places_competition
