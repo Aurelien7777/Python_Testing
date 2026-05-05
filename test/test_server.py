@@ -68,6 +68,9 @@ def test_book_more_than_12_places(client):
     assert b"You are not authorized to book more than 12 places per competition!" in response.data
 
 
+
+
+
 def test_book_valid_competition(client, booking_test_data):
     club_test, competition_test = booking_test_data
 
@@ -86,3 +89,19 @@ def test_book_in_past_competition(client):
     
     assert response.status_code == 200
     assert b"You cannot book places for a past competition" in response.data
+
+def test_club_points_are_deducted_after_booking(client, booking_test_data):
+    club_test, competition_test = booking_test_data
+
+    points_before = int(club_test["points"])
+    places_required = 12
+
+    response = client.post("/purchasePlaces", data={
+        "competition": "Test Competition",
+        "club": "Test Club",
+        "places": str(places_required),
+    }, follow_redirects=True)
+
+    assert response.status_code == 200
+    assert b"Great-booking complete!" in response.data
+    assert club_test["points"] == points_before - places_required
