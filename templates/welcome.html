@@ -30,10 +30,22 @@
             <a href="{{ url_for('book',competition=comp['name'],club=club['name']) }}">Book Places</a>
             {%endif%}
         </li>
-        <hr />
+
         {% endfor %}
     </ul>
+    
+
+    <h3>Clubs:</h3>
+    <ul>
+    {% for listed_club in clubs%}
+        <li>
+            {{listed_club['name']}}<br />
+            Points: {{listed_club['points']}}
+        </li>
+    {% endfor %}
+    </ul>
     {%endwith%}
+    <hr/>
 
 </body>
 </html>
