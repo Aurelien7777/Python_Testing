@@ -186,4 +186,43 @@ def test_book_less_than_0_place(client, booking_test_data):
     assert place_before == int((competition_test['numberOfPlaces']))
     assert points_before == int(club_test['points'])
     assert b'You must book at least 1 place' in response.data
-    
+
+def test_book_with_invalid_club(client, booking_test_data):
+    club_test, competition_test = booking_test_data
+
+    response = client.get(
+        f"/book/{competition_test['name']}/Unknown Club",
+        follow_redirects=True
+    )
+
+    assert response.status_code == 200
+    assert b"Something went wrong-please try again" in response.data
+
+def test_book_with_invalid_competition(client, booking_test_data):
+    club_test, competition_test = booking_test_data
+
+    response = client.get(
+        f"/book/Unknown Competition/{club_test['name']}",
+        follow_redirects=True
+    )
+
+    assert response.status_code == 200
+    assert b"Something went wrong-please try again" in response.data
+
+
+def test_purchase_places_with_non_numeric_value(client, booking_test_data):
+    club_test, competition_test = booking_test_data
+
+    points_before = int(club_test["points"])
+    places_before = int(competition_test["numberOfPlaces"])
+
+    response = client.post("/purchasePlaces", data={
+        "competition": competition_test["name"],
+        "club": club_test["name"],
+        "places": "abc",
+    }, follow_redirects=True)
+
+    assert response.status_code == 200
+    assert b"Please enter a valid number of places" in response.data
+    assert int(club_test["points"]) == points_before
+    assert int(competition_test["numberOfPlaces"]) == places_before
