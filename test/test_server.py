@@ -168,3 +168,15 @@ def test_booking_more_places_than_available(client, booking_test_data):
     assert b"You are not authorized to book more than available places!" in response.data
     assert b"Great-booking complete!" not in response.data
     assert int(competition_test["numberOfPlaces"]) == places_competition
+    
+    
+def test_public_points_board_displays_clubs_points(client, booking_test_data):
+    club_test, competition_test = booking_test_data
+
+    response = client.get("/points")
+
+    assert response.status_code == 200
+    assert club_test["name"].encode() in response.data
+    assert str(club_test["points"]).encode() in response.data
+
+

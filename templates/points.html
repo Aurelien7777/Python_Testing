@@ -1,0 +1,20 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Points Board | GUDLFT</title>
+</head>
+<body>
+    <h2>Clubs points board</h2>
+
+    <ul>
+        {% for listed_club in clubs %}
+            <li>
+                Club: {{ listed_club['name'] }}<br>
+                Points: {{ listed_club['points'] }}<br><br>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('index') }}">
+        <button type="button">Back</button>
+</body>
+</html>
