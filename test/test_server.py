@@ -185,4 +185,5 @@ def test_book_less_than_0_place(client, booking_test_data):
     assert response.status_code == 200
     assert place_before == int((competition_test['numberOfPlaces']))
     assert points_before == int(club_test['points'])
-    assert b'You must to book at least 1 place' in response.data
+    assert b'You must book at least 1 place' in response.data
+    
