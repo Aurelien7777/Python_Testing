@@ -168,15 +168,21 @@ def test_booking_more_places_than_available(client, booking_test_data):
     assert b"You are not authorized to book more than available places!" in response.data
     assert b"Great-booking complete!" not in response.data
     assert int(competition_test["numberOfPlaces"]) == places_competition
-    
-    
-def test_public_points_board_displays_clubs_points(client, booking_test_data):
+
+def test_book_less_than_0_place(client, booking_test_data):
     club_test, competition_test = booking_test_data
-
-    response = client.get("/points")
-
+    
+    place_required = -1
+    place_before = int(competition_test['numberOfPlaces'])
+    points_before = int(club_test["points"])
+    
+    response = client.post('/purchasePlaces', data={
+        "competition":competition_test['name'],
+        "club":club_test['name'],
+        "places": str(place_required)
+    })
+    
     assert response.status_code == 200
-    assert club_test["name"].encode() in response.data
-    assert str(club_test["points"]).encode() in response.data
-
-
+    assert place_before == int((competition_test['numberOfPlaces']))
+    assert points_before == int(club_test['points'])
+    assert b'You must to book at least 1 place' in response.data
