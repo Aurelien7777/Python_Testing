@@ -1,6 +1,14 @@
 import json
 from datetime import datetime
 from flask import Flask,render_template,request,redirect,flash,url_for
+from booking_rules import (
+    is_valid_place_number,
+    has_enough_competition_places,
+    is_within_booking_limit,
+    has_enough_points,
+    calculate_remaining_places,
+    calculate_remaining_points,
+)
 
 
 def loadClubs():
@@ -119,31 +127,66 @@ def purchasePlaces():
             clubs=clubs
         )
 
-    if placesRequired <= 0:
-        flash("You must book at least 1 place")
-        return render_template('welcome.html', club=club, competitions=competitions, clubs=clubs)
-
     point_club = int(club['points'])
-    number_places_max_per_competition = 12
-    places_competition = int(competition["numberOfPlaces"])
+    places_competition = int(competition['numberOfPlaces'])
 
-    if placesRequired > places_competition:
+    if not is_valid_place_number(placesRequired):
+        flash("You must book at least 1 place")
+        return render_template(
+            'welcome.html',
+            club=club,
+            competitions=competitions,
+            clubs=clubs
+        )
+
+    if not has_enough_competition_places(
+        placesRequired,
+        places_competition
+    ):
         flash('You are not authorized to book more than available places!')
-        return render_template('welcome.html', club=club, competitions=competitions, clubs=clubs)
+        return render_template(
+            'welcome.html',
+            club=club,
+            competitions=competitions,
+            clubs=clubs
+        )
 
-    if placesRequired > number_places_max_per_competition:
+    if not is_within_booking_limit(placesRequired):
         flash('You are not authorized to book more than 12 places per competition!')
-        return render_template('welcome.html', club=club, competitions=competitions, clubs=clubs)
+        return render_template(
+            'welcome.html',
+            club=club,
+            competitions=competitions,
+            clubs=clubs
+        )
 
-    if point_club < placesRequired:
+    if not has_enough_points(point_club, placesRequired):
         flash('You are not authorized to book this number of places!')
-        return render_template('welcome.html', club=club, competitions=competitions, clubs=clubs)
+        return render_template(
+            'welcome.html',
+            club=club,
+            competitions=competitions,
+            clubs=clubs
+        )
 
     flash('Great-booking complete!')
-    competition['numberOfPlaces'] = int(competition['numberOfPlaces']) - placesRequired
-    club['points'] = int(club['points']) - placesRequired
 
-    return render_template('welcome.html', club=club, competitions=competitions, clubs=clubs)
+    competition['numberOfPlaces'] = calculate_remaining_places(
+        places_competition,
+        placesRequired
+    )
+
+    club['points'] = calculate_remaining_points(
+        point_club,
+        placesRequired
+    )
+
+    return render_template(
+        'welcome.html',
+        club=club,
+        competitions=competitions,
+        clubs=clubs
+    )
 
 
 @app.route('/points')
