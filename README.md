@@ -124,10 +124,13 @@ Create a `.env` file at the root of the project with the following content:
 ```env
 FLASK_APP=server.py
 FLASK_DEBUG=1
+SECRET_KEY=your-secret-key-here
 ```
 Flask can automatically load this `.env` file if `python-dotenv` is installed.
 
 The `.env` file is ignored by Git and should not be committed.
+
+An example file is provided in `.env.example`.
 
 ---
 

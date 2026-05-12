@@ -24,7 +24,7 @@ def loadCompetitions():
 
 
 app = Flask(__name__)
-app.secret_key = "something_special"
+app.config.from_prefixed_env()
 
 competitions = loadCompetitions()
 clubs = loadClubs()
