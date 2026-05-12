@@ -6,6 +6,7 @@ from server import app, clubs, competitions
 def client():
     # active le mode test de Flask
     app.config["TESTING"] = True
+    app.config["SECRET_KEY"] = "test-secret-key"
     # crée un faux navigateur
     with app.test_client() as client:
         # donne ce navigateur aux tests
