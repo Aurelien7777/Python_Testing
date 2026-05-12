@@ -14,16 +14,12 @@ def client():
 
 @pytest.fixture
 def booking_test_data():
-    club_test = {
-        "name": "Test Club",
-        "email": "test@test.com",
-        "points": "20"
-    }
+    club_test = {"name": "Test Club", "email": "test@test.com", "points": "20"}
 
     competition_test = {
         "name": "Test Competition",
         "date": "2026-10-10 10:00:00",
-        "numberOfPlaces": "25"
+        "numberOfPlaces": "25",
     }
 
     clubs.append(club_test)
