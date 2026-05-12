@@ -8,3 +8,7 @@ __pycache__
 .env
 .vscode/
 env/
+htmlcov/
+*.pyc
+.coverage
+.pytest_cache/

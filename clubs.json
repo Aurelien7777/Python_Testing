@@ -12,5 +12,10 @@
     {   "name":"She Lifts",
         "email": "kate@shelifts.co.uk",
         "points":"12"
+    },
+    {
+        "name": "Test Club 1",
+        "email": "testclub@example.com",
+        "points": "20" 
     }
 ]}
